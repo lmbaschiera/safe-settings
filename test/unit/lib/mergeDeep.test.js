@@ -1622,7 +1622,8 @@ entries:
             required_review_thread_resolution: false,
             allowed_merge_methods: ['merge', 'squash', 'rebase'],
             required_reviewers: [],
-            require_extra_approval_for_unattributed_changes: true
+            require_extra_approval_for_unattributed_changes: true,
+            dismissal_restriction: { allowed_actors: [], enabled: false }
           }
         },
         {
@@ -1684,7 +1685,8 @@ entries:
           type: 'pull_request',
           parameters: {
             required_approving_review_count: 1,
-            require_extra_approval_for_unattributed_changes: false
+            require_extra_approval_for_unattributed_changes: false,
+            dismissal_restriction: { enabled: true, allowed_actors: [{ id: 42, type: 'Team' }] }
           }
         },
         {
@@ -1727,7 +1729,10 @@ entries:
 
     expect(merged.hasChanges).toBeTruthy()
     const deletedParameters = merged.deletions.rules.map(rule => rule.parameters)
-    expect(deletedParameters).toContainEqual({ require_extra_approval_for_unattributed_changes: false })
+    expect(deletedParameters).toContainEqual({
+      require_extra_approval_for_unattributed_changes: false,
+      dismissal_restriction: { enabled: true, allowed_actors: [{ id: 42, type: 'Team' }] }
+    })
     expect(deletedParameters).toContainEqual({ do_not_enforce_on_create: true })
   })
 
